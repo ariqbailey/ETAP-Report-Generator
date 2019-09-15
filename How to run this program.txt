@@ -1,0 +1,7 @@
+NOTE: MAKE SURE YOU HAVE JAVA JRE INSTALLED!!!!: https://www.java.com/en/download/
+
+1) First make sure that you have the file with the data in this folder. 
+2) Copy the name of the excel spreadsheet with the data by right clicking on the file, clicking "Rename" and then pressing Ctrl+C on your keyboard and then Esc.
+3) Run the program by clicking on the Report Generator file.
+4) When it prompts you for the name of the file press Crtl+V on your keyboard to paste the file name in.
+5) The report will build in this folder.
