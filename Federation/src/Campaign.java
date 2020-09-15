@@ -6,21 +6,17 @@ public class Campaign {
 	private double open_var;
 	
 	public Campaign() {
-		pledge = 0;
-		recieve = 0;
-		open_var = 0;
+		this.pledge = 0;
+		this.recieve = 0;
+		this.open_var = 0;
 	}
 	
-	public Campaign(double p, double r) {
+	public Campaign(double p, double r, double o) {
 		pledge = p;
 		recieve = r;
-		open_var = p - r;
+		open_var = o;
 	}
 	
-	public void calculateOpenBalance() {
-		open_var = pledge-recieve;
-	}
-
 	public double getPledge() {
 		return pledge;
 	}

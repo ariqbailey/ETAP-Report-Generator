@@ -51,7 +51,9 @@ public class CampaignRead {
 				Cell cell;
 				while(cellIterator.hasNext()) {
 					cell = cellIterator.next();
+					
 //					System.out.println(cell);
+					
 					if(column == CampaignRunner.NAME_COLUMN - 1) {
 						name = cell.getStringCellValue();
 						if(name == "") skipRow = true;
@@ -66,11 +68,14 @@ public class CampaignRead {
 						campaign.setPledge(cell.getNumericCellValue());
 					else if(column == CampaignRunner.PAID_COLUMN - 1)
 						campaign.setRecieve(cell.getNumericCellValue());
-					else {};
+					else if(column == CampaignRunner.OUTSTANDING_COLUMN - 1)
+						campaign.setOpen(cell.getNumericCellValue());
+					else {}
+					
 					column++;
 				}
 				if(!skipRow) {
-					campaign.calculateOpenBalance();
+//					campaign.calculateOpenBalance();
 					donors.add(name, address, phone);
 					donors.updateCamapign(name, campaignYear, campaign);
 				}

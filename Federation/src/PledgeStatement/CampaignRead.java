@@ -32,7 +32,7 @@ public class CampaignRead {
 			//Get first/desired sheet from the workbook
 			XSSFSheet sheet = workbook.getSheetAt(CampaignRunner.NUMBER_SHEET-1);
 
-			//Iterate through each rows one by one
+			//Iterate through each row one by one
 			Iterator<Row> rowIterator = sheet.iterator();
 
 			//Skip the first row
@@ -54,39 +54,45 @@ public class CampaignRead {
 				Cell cell;	
 				while(cellIterator.hasNext()) {
 					cell = cellIterator.next();
-					if (column == (CampaignRunner.FULL_NAME_COLUMN - 1)) {
-						name.setFullName(cell.getStringCellValue());
-						if(name.getFullName().equals("")) {
-							skipRow = true;
-							continue;
+					
+					System.out.println(cell);
+					try {
+						if (column == (CampaignRunner.FULL_NAME_COLUMN - 1)) {
+							name.setFullName(cell.getStringCellValue());
+							if(name.getFullName().equals("")) {
+								skipRow = true;
+								continue;
+							}
+						} else if (column == (CampaignRunner.FIRST_NAME_COLUMN - 1)) {
+							name.setFirstName(cell.getStringCellValue());
+						} else if (column == (CampaignRunner.LAST_NAME_COLUMN - 1)) {
+							name.setLastName(cell.getStringCellValue());
+						} else if (column == (CampaignRunner.ADDRESS_COLUMN - 1)) {
+							address.setAddress(cell.getStringCellValue());
+						} else if (column == (CampaignRunner.CITY_COLUMN - 1)) {
+							address.setCity(cell.getStringCellValue());
+						} else if (column == (CampaignRunner.STATE_COLUMN - 1)) {
+							address.setState(cell.getStringCellValue());
+						} else if (column == (CampaignRunner.ZIP_CODE_COLUMN - 1)) {
+							address.setZipCode(cell.getStringCellValue());
+						} else if (column == (CampaignRunner.VOICE_PHONE_COLUMN - 1)) {
+							voiceNumber = cell.getStringCellValue();
+						} else if (column == (CampaignRunner.MOBILE_PHONE_COLUMN - 1)) {
+							mobileNumber = cell.getStringCellValue();
+						} else if (column == (CampaignRunner.EMAIL_COLUMN - 1)) {
+							email = cell.getStringCellValue();
+							if(email.contains("\n")) email = email.split("\n")[0];
+						} else if (column == (CampaignRunner.CAMPAIGN_COLUMN - 1)) {
+							int year = Integer.parseInt(cell.getStringCellValue().split(" ")[0]);
+							if(oldestYear > year) oldestYear = year;
+							campaign.setCampaignYear(cell.getStringCellValue().split(" ")[0]);
+						} else if (column == (CampaignRunner.PLEDGE_COLUMN - 1)) {
+							campaign.setPledge(cell.getNumericCellValue());
+						} else if (column == (CampaignRunner.OUTSTANDING_COLUMN - 1)) {
+							campaign.setOpen(cell.getNumericCellValue());
 						}
-					} else if (column == (CampaignRunner.FIRST_NAME_COLUMN - 1)) {
-						name.setFirstName(cell.getStringCellValue());
-					} else if (column == (CampaignRunner.LAST_NAME_COLUMN - 1)) {
-						name.setLastName(cell.getStringCellValue());
-					} else if (column == (CampaignRunner.ADDRESS_COLUMN - 1)) {
-						address.setAddress(cell.getStringCellValue());
-					} else if (column == (CampaignRunner.CITY_COLUMN - 1)) {
-						address.setCity(cell.getStringCellValue());
-					} else if (column == (CampaignRunner.STATE_COLUMN - 1)) {
-						address.setState(cell.getStringCellValue());
-					} else if (column == (CampaignRunner.ZIP_CODE_COLUMN - 1)) {
-						address.setZipCode(cell.getStringCellValue());
-					} else if (column == (CampaignRunner.VOICE_PHONE_COLUMN - 1)) {
-						voiceNumber = cell.getStringCellValue();
-					} else if (column == (CampaignRunner.MOBILE_PHONE_COLUMN - 1)) {
-						mobileNumber = cell.getStringCellValue();
-					} else if (column == (CampaignRunner.EMAIL_COLUMN - 1)) {
-						email = cell.getStringCellValue();
-						if(email.contains("\n")) email = email.split("\n")[0];
-					} else if (column == (CampaignRunner.CAMPAIGN_COLUMN - 1)) {
-						int year = Integer.parseInt(cell.getStringCellValue().split(" ")[0]);
-						if(oldestYear > year) oldestYear = year;
-						campaign.setCampaignYear(cell.getStringCellValue().split(" ")[0]);
-					} else if (column == (CampaignRunner.PLEDGE_COLUMN - 1)) {
-						campaign.setPledge(cell.getNumericCellValue());
-					} else if (column == (CampaignRunner.OUTSTANDING_COLUMN - 1)) {
-						campaign.setOpen(cell.getNumericCellValue());
+					} catch (IllegalStateException e) {
+						System.err.println("ERROR ON READING FROM: \n" + cell + "POTENTIAL ISSUES INCL. MALFORMATTED ADDRESS\n\nCONTINUING...");
 					}
 					column++;
 				}

@@ -21,6 +21,11 @@ public class CampaignRunner {
 	static int PLEDGE_COLUMN;
 	static int OUTSTANDING_COLUMN;
 
+	/*
+	 * Ari Bailey, v0.2, 2020
+	 * If you are looking at this code in the future, sorry.
+	 */
+	
 	public static void main(String[] args) {
 
 		//Prompt code

@@ -34,24 +34,19 @@ public class DonorList {
 	}
 	
 	public void add(String name, String address, String phone) {
-		if(!contains(name)) donorList.add(new Donor(name, address, phone, new Campaign(0, 0), new Campaign(0, 0), new Campaign(0, 0)));
+		if(!contains(name)) donorList.add(new Donor(name, address, phone));
 	}
 	
 	public void updateCamapign(String name, String campaignYear, Campaign campaign) {
 		Donor temp = donorList.get(getIndex(name));
 		int year = Integer.parseInt(campaignYear.split(" ")[0]);
-//		System.out.println(name + " | " + campaignYear + " | " + campaign.getOpen() + " | " + (CampaignRunner.CURRENT_FISCAL_YEAR - year));
-		switch(CampaignRunner.CURRENT_FISCAL_YEAR - year) {
-			case 0:
-				temp.addFY2019(campaign);
-				break;
-			case 1:
-				temp.addFY2018(campaign);
-				break;
-			case 2:
-				temp.addFY2017(campaign);
-				break;
+		
+		if (year < CampaignRunner.LOWEST_YEAR) {
+			CampaignRunner.LOWEST_YEAR = year;
 		}
+		
+		temp.addYear(year, campaign);
+		
 		temp.recalculateOpenTotals();
 		donorList.set(getIndex(name), temp);
 	}

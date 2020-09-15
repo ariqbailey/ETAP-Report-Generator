@@ -72,26 +72,16 @@ public class CampaignWrite {
 		
 		//Add border
 
-		cell = row.createCell(cellCount++);
-		cell.setCellValue(CampaignRunner.CURRENT_FISCAL_YEAR - 2 + " Campaign");
-		cell.setCellStyle(style);
-		cell = row.createCell(cellCount++);
-		cell = row.createCell(cellCount++);
-		sheet.addMergedRegion(new CellRangeAddress(0, 0, cellCount-3, cellCount-1));
-		
-		cell = row.createCell(cellCount++);
-		cell.setCellValue(CampaignRunner.CURRENT_FISCAL_YEAR - 1 + " Campaign");
-		cell.setCellStyle(style);
-		cell = row.createCell(cellCount++);
-		cell = row.createCell(cellCount++);
-		sheet.addMergedRegion(new CellRangeAddress(0, 0, cellCount-3, cellCount-1));
-		
-		cell = row.createCell(cellCount++);
-		cell.setCellValue(CampaignRunner.CURRENT_FISCAL_YEAR + " Campaign");
-		cell.setCellStyle(style);
-		cell = row.createCell(cellCount++);
-		cell = row.createCell(cellCount++);
-		sheet.addMergedRegion(new CellRangeAddress(0, 0, cellCount-3, cellCount-1));
+		//add year columns
+		for(int i = CampaignRunner.LOWEST_YEAR; i <= CampaignRunner.CURRENT_FISCAL_YEAR; i++) {
+//			System.out.println(i);
+			cell = row.createCell(cellCount++);
+			cell.setCellValue(i + " Campaign");
+			cell.setCellStyle(style);
+			cell = row.createCell(cellCount++);
+			cell = row.createCell(cellCount++);
+			sheet.addMergedRegion(new CellRangeAddress(0, 0, cellCount-3, cellCount-1));
+		}
 		
 		cell = row.createCell(cellCount);
 		cell.setCellValue("Open Totals");
@@ -107,7 +97,7 @@ public class CampaignWrite {
 			cell.setCellStyle(fill);
 		}
 
-		for(int i = 7; i < 16; i += 3) {
+		for(int i = 7; i < 7 + 3 * (CampaignRunner.CURRENT_FISCAL_YEAR - CampaignRunner.LOWEST_YEAR + 1); i += 3) {
 			cell = row.createCell(i);
 			cell.setCellValue("Pledge");
 			cell.setCellStyle(style);
@@ -122,12 +112,20 @@ public class CampaignWrite {
 		
 //		style.setAlignment(HorizontalAlignment.LEFT);
 
+		//fill in the data for each donor
+		int row_num = 2;
 		for(int i = 0; i < donorEntries.size(); i++) {
+			
+			// skip over donors with no open total
+			if(donorEntries.get(i).getOpenTotals() == 0 && CampaignRunner.SKIP_EMPTY_TOTALS) {
+				continue;
+			}
+//			System.out.println(donorEntries.get(i).getName());
 			//reset cellCount to zero
 			cellCount = 0;
 
 			//Create a donor row
-			row = sheet.createRow(i + 2);
+			row = sheet.createRow(row_num++);
 			
 			//Isolate first name
 			String[] names = donorEntries.get(i).getName().split(" ");
@@ -165,32 +163,31 @@ public class CampaignWrite {
 			cell = row.createCell(cellCount++);
 			cell.setCellValue(donorEntries.get(i).getPhone());
 
-			//Add FY - 2 contributions
-			cell = row.createCell(cellCount++);
-			cell.setCellValue(donorEntries.get(i).getFY2017().getPledge());
-			cell = row.createCell(cellCount++);
-			cell.setCellValue(donorEntries.get(i).getFY2017().getRecieve());
-			cell = row.createCell(cellCount++);
-			cell.setCellValue(donorEntries.get(i).getFY2017().getOpen());
-			cell.setCellStyle(style);
-
-			//Add FY - 1 contributions
-			cell = row.createCell(cellCount++);
-			cell.setCellValue(donorEntries.get(i).getFY2018().getPledge());
-			cell = row.createCell(cellCount++);
-			cell.setCellValue(donorEntries.get(i).getFY2018().getRecieve());
-			cell = row.createCell(cellCount++);
-			cell.setCellValue(donorEntries.get(i).getFY2018().getOpen());
-			cell.setCellStyle(style);
-
 			//Add FY contributions
-			cell = row.createCell(cellCount++);
-			cell.setCellValue(donorEntries.get(i).getFY2019().getPledge());
-			cell = row.createCell(cellCount++);
-			cell.setCellValue(donorEntries.get(i).getFY2019().getRecieve());
-			cell = row.createCell(cellCount++);
-			cell.setCellValue(donorEntries.get(i).getFY2019().getOpen());
-			cell.setCellStyle(style);
+			for(int j = CampaignRunner.MAX_YEARS - 1; j >= 0 ; j--) {
+				double pledge = 0, recieve = 0, open = 0;
+				Campaign curr = donorEntries.get(i).getYearIndex(j);
+				boolean skip = true;
+				
+				if(curr != null) {
+					pledge = curr.getPledge();
+					recieve = curr.getRecieve();
+					open = curr.getOpen();
+					skip = false;
+				} else if(j <= CampaignRunner.CURRENT_FISCAL_YEAR - CampaignRunner.LOWEST_YEAR) { //fill in zeroes for other columns
+					skip = false;
+				}
+				
+				if(!skip) {
+					cell = row.createCell(cellCount++);
+					cell.setCellValue(pledge);
+					cell = row.createCell(cellCount++);
+					cell.setCellValue(recieve);
+					cell = row.createCell(cellCount++);
+					cell.setCellValue(open);
+					cell.setCellStyle(style);
+				}
+			}
 
 			//Add Open Totals
 			cell = row.createCell(cellCount++);
